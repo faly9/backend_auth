@@ -19,6 +19,11 @@ import json
 import random
 from django.utils import timezone
 
+from rest_framework.response import Response
+
+@api_view(["GET"])
+def hello_api(request):
+    return Response({"message": "Salut depuis Django !"})
 
 @api_view(['POST'])
 def register_view(request):

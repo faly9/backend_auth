@@ -28,6 +28,15 @@ class UserManager(BaseUserManager):
         return self.create_user(email=email, username=username, password=password, **extra_fields)
 
 class User(AbstractUser):
+    class Role(models.TextChoices):
+        ADMIN = "admin" , "Admin",
+        USER = "user" , "User"
+        
+    role=models.CharField(
+        max_length=10,
+        choices=Role.choices,
+        default=Role.USER
+    )
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=150, unique=True)
     is_active = models.BooleanField(default=False)
