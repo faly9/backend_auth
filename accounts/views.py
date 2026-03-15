@@ -18,6 +18,11 @@ import json
 # OTP 
 import random
 from django.utils import timezone
+# show peaple
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from .serializers import UserSerializer
 
 from rest_framework.response import Response
 
@@ -120,7 +125,9 @@ def verify_otp(request):
 
     return JsonResponse({
         "refresh": str(refresh),
-        "access": str(refresh.access_token)
+        "access": str(refresh.access_token),
+        "id" : user.id,
+        "email": user.email
     })
 
 @csrf_exempt
@@ -137,3 +144,16 @@ def activate_account(request, uidb64, token):
         return JsonResponse({"message": "Compte activé avec succès !"})
 
     return JsonResponse({"error": "Lien invalide"})
+
+
+# afficher tous les users de la base afin d'envoyer des message
+class UserListView(APIView):
+    permission_classes = [IsAuthenticated] # Commente ceci juste pour 1 test
+    
+    def get(self, request):
+        print(f"DEBUG: Header Auth -> {request.headers.get('Authorization')}")
+        print(f"DEBUG: User -> {request.user}") 
+        
+        users = User.objects.exclude(id=request.user.id)
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)

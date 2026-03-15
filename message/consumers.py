@@ -1,46 +1,67 @@
+# message/consumers.py
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
-
+from .models import Message
+from django.contrib.auth import get_user_model
+User = get_user_model() # À mettre ici pour qu'il soit global au fichier
+# ⚠️ Important : définir User avant la classe
 class PrivateChatConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
-# connection en permanence avec le serveur backend
-        self.user_id = self.scope['url_route']['kwargs']['user_id']
+        try:
+            self.user_id = int(self.scope['url_route']['kwargs']['user_id'])
+        except KeyError:
+            await self.close()
+            return
+
         self.group_name = f"user_{self.user_id}"
 
-# rejoindre le groupe,chaque user a son groupe
-        await self.channel_layer.group_add(
-            self.group_name,
-            self.channel_name
-        )
+        # Joindre le groupe de l'utilisateur
+        await self.channel_layer.group_add(self.group_name, self.channel_name)
 
+        # Accepter la connexion WebSocket
         await self.accept()
-# tant que le browser se ferme , le consumer le retire dans le groupe et n envoie pas les messages 
+
     async def disconnect(self, close_code):
-        await self.channel_layer.group_discard(
-            self.group_name,
-            self.channel_name
-        )
+        # Retirer le consommateur du groupe
+        await self.channel_layer.group_discard(self.group_name, self.channel_name)
 
-# le consumer recoit le message depuis le frontend et le transforme en dictionnaire python au lieu de JSON
     async def receive(self, text_data):
-        data = json.loads(text_data)
-        message = data['message']
-        receiver = data['receiver']
+        try:
+            data = json.loads(text_data)
+            message = data.get("message", "").strip()
+            receiver_id = int(data.get("receiver"))
 
-# envoyer le message au destinataire
-        await self.channel_layer.group_send(
-            f"user_{receiver}",
-            {
-                'type': 'send_message',
-                'message': message
-            }
-        )
+            if not message:
+                # Ignorer les messages vides
+                return
 
-# redis et le websocket envoie le message vers le destinataire
+            # Récupérer sender et receiver depuis la base
+            sender = await User.objects.aget(id=self.user_id)
+            receiver = await User.objects.aget(id=receiver_id)
+
+            # Sauvegarder le message dans la base
+            await Message.objects.acreate(sender=sender, receiver=receiver, content=message)
+
+            # Envoyer le message au destinataire via le channel layer
+            await self.channel_layer.group_send(
+                f"user_{receiver_id}",
+                {
+                    "type": "send_message",
+                    "message": message,
+                    "sender": self.user_id,
+                    
+                }
+            )
+        except Exception as e:
+            # Debug : imprime l'erreur côté serveur pour développement
+            print(f"[WebSocket ERROR] {e}")
+
     async def send_message(self, event):
-        message = event['message']
-
-        await self.send(text_data=json.dumps({
-            'message': message
-        }))
+        try:
+            await self.send(text_data=json.dumps({
+                "message": event.get("message"),
+                "sender": event.get("sender"),
+            }))
+        except Exception as e:
+            print(f"[Send ERROR] {e}")

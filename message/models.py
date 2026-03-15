@@ -1,6 +1,5 @@
 from django.db import models
 from django.conf import settings  # <-- important pour AUTH_USER_MODEL
-
 class Message(models.Model):
     sender = models.ForeignKey(
         settings.AUTH_USER_MODEL,  # ← utiliser ça à la place de User
@@ -13,7 +12,7 @@ class Message(models.Model):
         related_name="received_messages"
     )
     content = models.TextField()
-    timestamp = models.DateTimeField(auto_now_add=True)
 
+    timestamp = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return f"{self.sender} -> {self.receiver}: {self.content}"
