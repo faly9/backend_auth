@@ -27,7 +27,12 @@ INSTALLED_APPS = [
     'accounts',
     'message',
 ]
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
 
+CORS_ALLOW_CREDENTIALS = True
 # FIX 2: Only ONE middleware list, with CorsMiddleware at the very top
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',  # MUST be first
@@ -41,10 +46,14 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+    "http://10.138.55.128:3000",
+]
+
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-# FIX 3: CORS Configuration
-CORS_ALLOW_ALL_ORIGINS = True
+
 
 # --- The rest of your settings ---
 
