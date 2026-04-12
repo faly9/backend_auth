@@ -48,13 +48,12 @@ MIDDLEWARE = [
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
-    "http://127.0.0.1:3000",
+    "http://10.138.55.128:3000",
 ]
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-# FIX 3: CORS Configuration
-CORS_ALLOW_ALL_ORIGINS = True
+
 
 # --- The rest of your settings ---
 
