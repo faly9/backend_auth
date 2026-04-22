@@ -78,12 +78,10 @@ def activate_account(request, uidb64, token):
         user.save()
 
         refresh = RefreshToken.for_user(user)
-        access = str(refresh.access_token)
-        refresh_str = str(refresh)
+        # access = str(refresh.access_token)
+        # refresh_str = str(refresh)
 
-        return redirect(
-            f"http://localhost:3000/activate-success?access={access}&refresh={refresh_str}"
-        )
+        return redirect("http://localhost:3000/signIn")
 
     return redirect("http://localhost:3000/activate-error")
 
