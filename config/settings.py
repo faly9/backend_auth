@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'channels',
     'accounts',
     'message',
+    'tasks',
 ]
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
@@ -53,7 +54,7 @@ CSRF_TRUSTED_ORIGINS = [
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-
+LOGIN_REDIRECT_URL = '/api/tasks/'
 
 # --- The rest of your settings ---
 
@@ -73,6 +74,7 @@ CHANNEL_LAYERS = {
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ),
 }
 

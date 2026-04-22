@@ -1,8 +1,11 @@
-from django.urls import path
-from .views import ConversationView
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import ConversationView, ClientViewSet
+
+router = DefaultRouter()
+router.register(r'clients', ClientViewSet)
 
 urlpatterns = [
-    # Exemple : http://127.0.0.1:8000/conversation/2/
-    # (Le 2 est l'ID de la personne avec qui vous discutez)
+    path('', include(router.urls)),
     path('conversation/<int:other_id>/', ConversationView.as_view(), name='chat-history'),
 ]
