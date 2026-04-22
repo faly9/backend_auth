@@ -43,6 +43,9 @@ class User(AbstractUser):
     otp = models.CharField(max_length=6, blank=True, null=True)  
     otp_created_at = models.DateTimeField(blank=True, null=True)  
 
+    # PDP
+    avatar = models.CharField(max_length=255, blank=True, null=True)
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username'] 
 

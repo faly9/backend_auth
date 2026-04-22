@@ -18,4 +18,15 @@ class RegisterSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email'] 
+        fields = ['id', 'username', 'email', 'avatar'] 
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['username', 'avatar']
+
+    def update(self, instance, validated_data):
+        instance.username = validated_data.get('username', instance.username)
+        instance.avatar = validated_data.get('avatar', instance.avatar)
+        instance.save()
+        return instance

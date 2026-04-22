@@ -1,6 +1,6 @@
 from django.urls import path
 # Ajout de UserListView ici
-from .views import register_view, login_view, activate_account, verify_otp, UserListView,refresh_access_token,logout_view
+from .views import register_view, login_view, activate_account, verify_otp, UserListView,refresh_access_token,logout_view, ProfileUpdateView
 
 urlpatterns = [
     path('register/', register_view, name="register"),
@@ -11,4 +11,5 @@ urlpatterns = [
     path('users/', UserListView.as_view(), name='user-list'), 
     path('refresh/', refresh_access_token, name='refresh-token'), 
     path('logout/', logout_view, name='logout'),
+    path('profile/', ProfileUpdateView.as_view(), name='profile'),
 ]
